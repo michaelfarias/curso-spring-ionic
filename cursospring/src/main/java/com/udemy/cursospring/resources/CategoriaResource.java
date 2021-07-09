@@ -21,7 +21,7 @@ public class CategoriaResource {
 	public ResponseEntity<?> listar(@PathVariable Integer id) {
 
 		Categoria obj = service.buscar(id);
-		System.out.println(obj);
+
 		return ResponseEntity.ok().body(obj);
 	}
 }
