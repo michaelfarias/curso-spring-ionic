@@ -14,11 +14,14 @@ import org.springframework.stereotype.Service;
 import com.udemy.cursospring.domain.Cidade;
 import com.udemy.cursospring.domain.Cliente;
 import com.udemy.cursospring.domain.Endereco;
+import com.udemy.cursospring.domain.enums.Perfil;
 import com.udemy.cursospring.domain.enums.TipoCliente;
 import com.udemy.cursospring.dto.ClienteDTO;
 import com.udemy.cursospring.dto.ClienteNewDTO;
 import com.udemy.cursospring.repositories.ClienteRepository;
 import com.udemy.cursospring.repositories.EnderecoRepository;
+import com.udemy.cursospring.secutiry.UserSS;
+import com.udemy.cursospring.services.exceptions.AuthorizationException;
 import com.udemy.cursospring.services.exceptions.DataIntegrityException;
 import com.udemy.cursospring.services.exceptions.ObjectNotFoundException;
 
@@ -34,6 +37,12 @@ public class ClienteService {
 	private EnderecoRepository enderecoRepository;
 
 	public Cliente find(Integer id) {
+
+		UserSS user = UserService.autheticated();
+		if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado");
+		}
+
 		Optional<Cliente> obj = repo.findById(id);
 
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
